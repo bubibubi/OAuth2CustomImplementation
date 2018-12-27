@@ -1,6 +1,5 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNet.Identity;
-using Microsoft.AspNet.Identity.EntityFramework;
 using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin;
 using OAuth2CustomImplementation.Models;
@@ -16,9 +15,28 @@ namespace OAuth2CustomImplementation
         {
         }
 
+        protected override async Task<bool> VerifyPasswordAsync(IUserPasswordStore<ApplicationUser, string> store, ApplicationUser user, string password)
+        {
+            var hash = await store.GetPasswordHashAsync(user);
+            return hash == password;
+        }
+
+        protected override async Task<IdentityResult> UpdatePassword(IUserPasswordStore<ApplicationUser, string> passwordStore, ApplicationUser user, string newPassword)
+        {
+            var result = await PasswordValidator.ValidateAsync(newPassword);
+            if (!result.Succeeded)
+            {
+                return result;
+            }
+            
+            // TODO: use the proper password hasher
+            await passwordStore.SetPasswordHashAsync(user, PasswordHasher.HashPassword(newPassword));
+            return IdentityResult.Success;
+        }
+
         public static ApplicationUserManager Create(IdentityFactoryOptions<ApplicationUserManager> options, IOwinContext context)
         {
-            var manager = new ApplicationUserManager(new UserStore<ApplicationUser>(context.Get<ApplicationDbContext>()));
+            var manager = new ApplicationUserManager(new TenantUserStore());
             // Configure validation logic for usernames
             manager.UserValidator = new UserValidator<ApplicationUser>(manager)
             {

@@ -21,17 +21,13 @@ namespace OAuth2CustomImplementation.Models
         public string Email { get; set; }
 
         public IEnumerable<UserLoginInfoViewModel> Logins { get; set; }
-
-        public IEnumerable<ExternalLoginViewModel> ExternalLoginProviders { get; set; }
     }
 
     public class UserInfoViewModel
     {
-        public string Email { get; set; }
-
-        public bool HasRegistered { get; set; }
-
-        public string LoginProvider { get; set; }
+        public string FullUserName { get; set; }
+        public string TenantId { get; set; }
+        public string UserName { get; set; }
     }
 
     public class UserLoginInfoViewModel

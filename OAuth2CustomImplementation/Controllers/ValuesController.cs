@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Web.Http;
+using OAuth2CustomImplementation.Models;
 
 namespace OAuth2CustomImplementation.Controllers
 {
@@ -13,7 +14,9 @@ namespace OAuth2CustomImplementation.Controllers
         // GET api/values
         public IEnumerable<string> Get()
         {
-            return new string[] { "value1", "value2" };
+            string tenantId = ApplicationUser.GetTenantId(User.Identity.Name);
+            string userName = ApplicationUser.GetUserName(User.Identity.Name);
+            return new string[] { tenantId, userName };
         }
 
         // GET api/values/5
